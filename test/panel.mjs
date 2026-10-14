@@ -513,6 +513,32 @@ assert.ok(hourText.includes('横轴 24 个小时'), `应画满 24 个小时桶�
 assert.equal(findAll(hourTree, (node) => node.props?.className === 'tku_chartCol').length, 24, '应有 24 根柱子')
 console.log('✓ 单日视图按小时展开（24 根柱子）')
 
+// 自定义悬浮提示：完整时间、准确数值、边缘约束与离开隐藏。
+const columns = findAll(hourTree, (node) => node.props?.className === 'tku_chartCol')
+const hoverEvent = { clientX: 395, clientY: 80, currentTarget: {
+  parentElement: { getBoundingClientRect: () => ({ left: 0, top: 0, width: 400 }) },
+  getBoundingClientRect: () => ({ left: 150, width: 16 }),
+} }
+assert.equal(columns[9].props.title, undefined, '不能再弹出延迟的原生 title')
+columns[9].props.onPointerEnter(hoverEvent)
+hourTree = await settle(hourMount.Component, 2)
+let tooltip = findAll(hourTree, (node) => node.props?.role === 'tooltip')[0]
+assert.ok(tooltip, '悬停时应显示卡片')
+assert.ok(collectText(tooltip).join('').includes('2026/10/14 09:00'), '应展示完整小时')
+assert.ok(collectText(tooltip).join('').includes('Tokens30'), '应展示精确 token 数')
+assert.ok(tooltip.props.style.left + tooltip.props.style.width <= 392, '右侧卡片不能溢出图表')
+findAll(hourTree, (node) => node.props?.className === 'tku_chart')[0].props.onPointerLeave()
+hourTree = await settle(hourMount.Component, 2)
+assert.equal(findAll(hourTree, (node) => node.props?.role === 'tooltip').length, 0, '移开鼠标后隐藏')
+findAll(hourTree, (node) => node.props?.className === 'tku_chartCol')[9].props.onFocus({ currentTarget: hoverEvent.currentTarget })
+hourTree = await settle(hourMount.Component, 2)
+assert.ok(findAll(hourTree, (node) => node.props?.role === 'tooltip').length === 1, '键盘聚焦同样显示提示')
+findAll(hourTree, (node) => node.type === 'button' && collectText(node).join('') === '请求数')[0].props.onClick()
+hourTree = await settle(hourMount.Component, 2)
+tooltip = findAll(hourTree, (node) => node.props?.role === 'tooltip')[0]
+assert.ok(collectText(tooltip).join('').includes('请求数1'), '切换指标后提示应同步更新')
+console.log('✓ 悬浮卡片：日期、指标、精确数值、边缘约束、隐藏与键盘支持')
+
 /* ------------------------------------------------------------ 9. 自动刷新 */
 
 // 勾选自动刷新后，到点必须再取一次数——这是「刚聊完就能看到新数字」的前提。
