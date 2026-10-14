@@ -1,0 +1,10 @@
+# dsh-token-usage 的 bundle 层。
+#
+# 这里插入插件入口，让 profile 组合时把 token 用量统计注册进 Host。
+# 默认值写在插件自己的 Config schema 里；要改默认行为，请在本 profile 的
+# cordis.patch.yml 里用同一个 id 覆盖 config。
+- insert:
+    - id: token-usage
+      name: dsh-token-usage
+      config:
+        enabled: true

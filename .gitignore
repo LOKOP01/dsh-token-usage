@@ -1,0 +1,10 @@
+node_modules/
+.pnpm-store/
+coverage/
+*.log
+.env
+.env.*
+!.env.example
+# 本机调研脚本，不属于插件发布内容。
+tools/
+.scratch/

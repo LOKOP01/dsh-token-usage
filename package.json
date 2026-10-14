@@ -1,0 +1,58 @@
+{
+  "name": "dsh-token-usage",
+  "displayName": "DSH Token 每日用量统计",
+  "description": "统计 DeepSeek Harness 全部会话（含子 Agent、workflow 子任务）每日消耗的 token：读取会话日志中 provider 返回的真实 usage，按本地时区分天汇总，并提供 /token 命令、token_usage 工具与用量统计界面。",
+  "version": "1.0.0",
+  "author": "LOKOP01",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/LOKOP01/dsh-token-usage.git"
+  },
+  "homepage": "https://github.com/LOKOP01/dsh-token-usage#readme",
+  "bugs": { "url": "https://github.com/LOKOP01/dsh-token-usage/issues" },
+  "keywords": [
+    "dsh-plugin",
+    "deepseek-harness",
+    "deepseek",
+    "token",
+    "usage",
+    "统计",
+    "token用量"
+  ],
+  "type": "module",
+  "engines": {
+    "node": "^22.19.0 || >=24.0.0",
+    "dsh": ">=0.2.0-rc.2"
+  },
+  "main": "lib/index.js",
+  "scripts": {
+    "test": "node test/selftest.mjs && node test/panel.mjs"
+  },
+  "exports": {
+    ".": "./lib/index.js",
+    "./client": "./lib/client.js",
+    "./cordis.patch.yml": "./cordis.patch.yml",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "lib",
+    "test",
+    "cordis.patch.yml",
+    "README.md",
+    "LICENSE"
+  ],
+  "license": "MIT",
+  "dsh": {
+    "manifestVersion": 1,
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "platform": "web",
+      "inject": [
+        "@deepseek-ai/dsh-client-ui-layout",
+        "@deepseek-ai/dsh-client-ui-sidebar"
+      ]
+    }
+  }
+}
