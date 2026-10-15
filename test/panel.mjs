@@ -392,7 +392,7 @@ assert.ok(text.includes('主会话'), '明细应标注会话来源')
 assert.ok(text.includes('tok/s'), '有耗时的调用应显示速度')
 assert.ok(text.includes('200 tok/s'), '速度 = 输出 400 / 2 秒 = 200 tok/s')
 assert.ok(text.includes('98.4%'), '缓存命中率 = 9000 / 9150 = 98.4%')
-assert.ok(text.includes('plugin/token'), `项目名应从 slug 还原，实际：${text.slice(0, 600)}`)
+assert.ok(findAll(tree, (node) => String(node.props?.title ?? '').includes('plugin/token')).length > 0, '项目信息保留在来源提示中')
 
 // 非缓存用量 = (全部输入 9150 − 命中 9000) + 输出 600 = 750
 assert.ok(text.includes('750'), `非缓存用量应为 750，实际全文：${text.slice(0, 500)}`)
@@ -401,10 +401,12 @@ assert.ok(text.includes('—'), '缺耗时信息时应显示占位符')
 
 const thead = findAll(tree, (node) => node.type === 'thead')[0]
 assert.ok(thead !== undefined, '应渲染表头')
-assert.equal(findAll(thead, (node) => node.type === 'th').length, 10, '请求日志应有 10 列')
+assert.deepEqual(findAll(thead, (node) => node.type === 'th').map((node) => collectText(node).join('')), ['时间', '来源', '供应商', '模型', '新增输入', '输出', '缓存命中', '速度'])
+assert.ok(text.includes('10-14 17:59'), '日期和时间应合并到一列')
+assert.ok(text.includes('9.0K'), '缓存命中量应紧凑显示')
 const tbody = findAll(tree, (node) => node.type === 'tbody')[0]
 assert.equal(findAll(tbody, (node) => node.type === 'tr').length, records.length, '明细行数应与记录数一致')
-console.log('✓ 数据态正确（非缓存用量 750、命中率 98.4%、速度 200 tok/s、10 列 2 行）')
+console.log('✓ 数据态正确（非缓存用量 750、命中率 98.4%、速度 200 tok/s、8 列 2 行）')
 
 /* ------------------------------------------------------------ 4. 截断提示 */
 
